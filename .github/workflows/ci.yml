@@ -4,7 +4,7 @@ on:
   push:
     branches:  [main]
   pull_request:
-    branhces:  [main]
+    branches:  [main]
 env:
   IMAGE_NAME:  ghcr.io/${{ github.repository}}
 
@@ -23,7 +23,7 @@ jobs:
         run: ./mvnw -B verify
   build-push:
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/head/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,18 +39,18 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
       - id: meta
-        uses: docker/metadat-actions@v5
+        uses: docker/metadata-action@v5
         with:
           images: ${{env.IMAGE_NAME}}
           tags: |
             type=sha
             type=raw,value=latest
 
-      - uses: docker/build-push-actions@v6
+      - uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{steps.meta.ouputs.tags}}
+          tags: ${{steps.meta.outputs.tags}}
           labels: ${{steps.meta.outputs.labels}}
           cache-from: type=gha
-          cache-to: type-gha,mode=max
+          cache-to: type=gha,mode=max
